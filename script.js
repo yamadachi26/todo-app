@@ -49,17 +49,30 @@ function addTodo() {
 
 // タスク完了切替
 function renderTodos() {
-  // 実際のタスクを描画する処理（後で詳しく実装）
   todoList.innerHTML = todos
     .map(
       (todo) => `
-        <div class="todo-item">
+        <div class="todo-item ${
+          todo.completed ? "completed" : ""
+        }" data-todo-id="${todo.id}">
+            <input type="checkbox"
+                   class="todo-checkbox"
+                   ${todo.completed ? "checked" : ""}
+                   onchange="toggleTodo(${todo.id})">
+
             <span class="todo-text">${todo.text}</span>
+
+            <div class="todo-actions">
+                <button class="delete-btn" onclick="deleteTodo(${todo.id})">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
         </div>
     `
     )
     .join("");
 }
+
 // LocalStorageへの保存
 function saveTodos() {
   localStorage.setItem("todos", JSON.stringify(todos)); // todos配列をJSON形式の文字列に変換してlocalStorageに保存
@@ -69,4 +82,23 @@ function saveTodos() {
 function loadTodos() {
   const todos = localStorage.getItem("todos"); // localStorageからデータを読み込む
   return todos ? JSON.parse(todos) : []; // JSONオブジェクトに変換して返す
+}
+// タスク完了切替
+function toggleTodo(id) {
+  const todo = todos.find((t) => t.id === id); // IDでタスクを検索
+  if (todo) {
+    todo.completed = !todo.completed; // completedプロパティを反転させる
+    saveTodos();
+    renderTodos();
+  }
+}
+
+// タスク削除
+function deleteTodo(id) {
+  // 確認ダイアログを表示
+  if (confirm("このタスクを削除しますか？")) {
+    todos = todos.filter((t) => t.id !== id); // IDが一致しないタスクだけを残す
+    saveTodos();
+    renderTodos();
+  }
 }
