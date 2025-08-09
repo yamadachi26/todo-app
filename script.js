@@ -19,12 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
   totalTasksEl = document.getElementById("totalTasks");
   completedTasksEl = document.getElementById("completedTasks");
   activeTasksEl = document.getElementById("activeTasks");
-  // 各イベントのリスナーを設定
-addBtn.addEventListener("click", addTodo); // 「+」ボタンがクリックされたらaddTodoメソッドを呼び出す
-todoInput.addEventListener("keypress", (e) => {
-  // 入力欄でEnterキーが押されたらaddTodoメソッドを呼び出す
-  if (e.key === "Enter") addTodo();
+  addBtn.addEventListener("click", addTodo); // 「+」ボタンがクリックされたらaddTodoメソッドを呼び出す
+  todoInput.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") addTodo();
+    todos = loadTodos();
+    renderTodos();
 });
+
+
   
 });
 // タスク追加
@@ -40,6 +42,7 @@ function addTodo() {
   };
 
   todos.push(todo); // 配列にタスクを追加
+  saveTodos();
   renderTodos(); // タスクを再描画
   todoInput.value = ""; // 入力欄を空にする
 }
@@ -56,4 +59,14 @@ function renderTodos() {
     `
     )
     .join("");
+}
+// LocalStorageへの保存
+function saveTodos() {
+  localStorage.setItem("todos", JSON.stringify(todos)); // todos配列をJSON形式の文字列に変換してlocalStorageに保存
+}
+
+// LocalStorageからの読み込み
+function loadTodos() {
+  const todos = localStorage.getItem("todos"); // localStorageからデータを読み込む
+  return todos ? JSON.parse(todos) : []; // JSONオブジェクトに変換して返す
 }
